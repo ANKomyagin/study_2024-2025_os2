@@ -1,13 +1,14 @@
 ---
 ## Front matter
 lang: ru-RU
-title: Лабораторная работа №11
-subtitle: Управление загрузкой системы
+title: Лабораторная работа №13
+subtitle: "Фильтр пакетов"
 author:
   - Комягин А.Н.
 institute:
   - Российский университет дружбы народов, Москва, Россия
-
+  
+date: 30 ноября 2024
 
 ## i18n babel
 babel-lang: russian
@@ -22,115 +23,71 @@ section-titles: true
 theme: metropolis
 header-includes:
  - \metroset{progressbar=frametitle,sectionpage=progressbar,numbering=fraction}
- - '\makeatletter'
- - '\beamer@ignorenonframefalse'
- - '\makeatother'
- 
-## Fonts
-mainfont: PT Serif
-romanfont: PT Serif
-sansfont: PT Sans
-monofont: PT Mono
-mainfontoptions: Ligatures=TeX
-romanfontoptions: Ligatures=TeX
-sansfontoptions: Ligatures=TeX,Scale=MatchLowercase
-monofontoptions: Scale=MatchLowercase,Scale=0.9
 ---
 
+# Цель
 
-# Цель работы
+## Цель
 
-## Цель работы
+- Получить навыки настройки пакетного фильтра в Linux.
 
- - Продолжение изучения ОС Linux. Получение навыков работы с загрузчиком системы GRUB2.
+# Выполнение лабораторной работы
 
-# Выполнение работы
+##  Просмотр текущей зоны и доступных зон
 
-## 11.4.1. Модификация параметров GRUB2
-:::::::::::::: {.columns align=center}
-::: {.column width="45%"}
-![Редактирование файла](image/2.PNG)
-:::
-::: {.column width="50%"}
-![Запись в GRUB2 изменений](image/1.PNG)
-:::
-::::::::::::::
+![Просмотр текущей зоны и доступных зон](image/1.PNG)
 
-## 11.4.2. Устранения неполадок
-:::::::::::::: {.columns align=center}
-::: {.column width="40%"}
-Перезапускаем систему, как только появится меню GRUB, выбираем строку с текущей версией ядра в меню и нажимаем e для редактирования. В конце строки ($root)/vmlinuz-  введем systemd.unit=rescue.target
-и удалим опции rhgb
-:::
-::: {.column width="50%"}
+##  Добавление службы с конфигурацией Runtime
 
-![Добавление systemd.unit=rescue.target](image/4.PNG)
-:::
-::::::::::::::
+![Добавление службы с конфигурацией Runtime](image/5.PNG)
 
+## Добавление службы с конфигурацией Permanent
 
+![Добавление службы с конфигурацией Permanent](image/8.PNG)
 
-## 11.4.2
-:::::::::::::: {.columns align=center}
-::: {.column width="50%"}
-![Продолжение загрузки. Файлы модулей](image/5.PNG)
-:::
-::: {.column width="45%"}
+## Добавление службы с конфигурацией Permanent
 
-![Просмотр переменных сред и перезагрузка](image/6.PNG)
-:::
-::::::::::::::
+![Перезагрузка firewalld и просмотр информации](image/9.PNG)
 
-## 11.4.2
+## Работа через графический интерфейс
 
-:::::::::::::: {.columns align=center}
-::: {.column width="50%"}
-![Редактирование строки](image/7.PNG)
-:::
-::: {.column width="60%"}
-![Просмотр загруженных модулей](image/8.PNG)
+![Графический интерфейс](image/11.PNG)
 
-:::
-::::::::::::::
+# Ответы на контрольные вопросы
 
+## 1. Какая служба должна быть запущена перед началом работы с менеджером конфигурации брандмауэра firewall-config?
 
+Нужно запустить службу firewalld, это можно сделать командой systemctl start firewalld.
 
-## 11.4.3. Сброс пароля root
-:::::::::::::: {.columns align=center}
-::: {.column width="50%"}
+## 2. Какая команда позволяет добавить UDP-порт 2355 в конфигурацию брандмауэра в зоне по умолчанию?
 
-![Добавление rd.break](image/9.PNG)
-:::
-::::::::::::::
+Команда firewall-cmd --add-port=2355/udp --permanent.
 
+## 3. Какая команда позволяет показать всю конфигурацию брандмауэра во всех зонах?
 
+Команда firewall-cmd --list-all-zones.
 
-## 11.4.3
-:::::::::::::: {.columns align=center}
-::: {.column width="50%"}
+## 4. Какая команда позволяет удалить службу vnc-server из текущей конфигурации брандмауэра?
 
-Чтобы получить доступ к системному образу для чтения и записи, наберем mount -o remount,rw /sysroot
-Сделаем содержимое каталога /sysimage новым корневым каталогом, введем команду задания пароляи установим новый пароль для пользователя root. Загрузим также политику SELinux с помощью команды
-load_policy -i и  вручную установим правильный тип контекста для /etc/shadow.
-:::
-::: {.column width="50%"}
+Команда firewall-cmd --remove-service=vnc-server --permanent.
 
-![Пароль для root](image/10.PNG)
-:::
-::::::::::::::
+## 5. Какая команда firewall-cmd позволяет активировать новую конфигурацию, добавленную опцией --permanent?
 
-## 11.4.3. 
-:::::::::::::: {.columns align=center}
-::: {.column width="50%"}
+Команда firewall-cmd --reload.
 
-![Вход в систему](image/11.PNG)
-:::
-::::::::::::::
+## 6. Какой параметр firewall-cmd позволяет проверить, что новая конфигурация была добавлена в текущую зону и теперь активна?
+
+Команда firewall-cmd --list-all.
+
+## 7. Какая команда позволяет добавить интерфейс eno1 в зону public?
+
+Команда firewall-cmd --zone=public --add-interface=eno1 --permanent.
+
+## 8. Если добавить новый интерфейс в конфигурацию брандмауэра, пока не указана зона, в какую зону он будет добавлен?
+
+Он будет добавлен в зону по умолчанию.
 
 # Вывод
 
-## Вывод
-
-- В ходе работы были получены навыки работы с загрузчиком системы, проделаны различные действия в GRUB2.
-
-
+## Я получил навыки настройки пакетного фильтра в Linux.
+	
